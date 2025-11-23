@@ -1,0 +1,42 @@
+{
+  "name": "nomaddish",
+  "version": "1.0.0",
+  "private": true,
+  "description": "NomadDish - interactive globe that surfaces regional recipes.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint . --ext .ts,.tsx --max-warnings=0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@radix-ui/react-separator": "^1.1.8",
+    "@radix-ui/react-slot": "^1.2.4",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "next": "^16.0.3",
+    "openai": "^6.9.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-globe.gl": "^2.37.0",
+    "tailwind-merge": "^3.4.0",
+    "three": "^0.181.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.6",
+    "@types/react-dom": "^19.2.3",
+    "@typescript-eslint/eslint-plugin": "^8.47.0",
+    "@typescript-eslint/parser": "^8.47.0",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.39.1",
+    "eslint-config-next": "^16.0.3",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.13",
+    "tailwindcss-animate": "^1.0.7",
+    "typescript": "^5.9.3"
+  }
+}
