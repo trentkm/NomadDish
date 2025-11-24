@@ -1,13 +1,6 @@
 import type { Metadata } from "next";
-import { Manrope } from "next/font/google";
 import { cn } from "@/lib/utils";
 import "./globals.css";
-
-const manrope = Manrope({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  display: "swap"
-});
 
 export const metadata: Metadata = {
   title: "NomadDish",
@@ -17,7 +10,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn("min-h-screen bg-background text-foreground", manrope.className)}>
+      <body className={cn("min-h-screen bg-background text-foreground font-sans")}>
         <div className="min-h-screen flex flex-col">{children}</div>
       </body>
     </html>

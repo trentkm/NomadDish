@@ -1,15 +1,27 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useRef, useState, type ForwardRefExoticComponent, type MutableRefObject, type RefAttributes } from "react";
+import { useEffect, useRef, useState, type ComponentType, type MutableRefObject } from "react";
 
 type GlobeInstance = {
   controls: () => { autoRotate: boolean; autoRotateSpeed: number };
   pointOfView: (view: { lat: number; lng: number; altitude?: number }, ms?: number) => void;
 };
 
-const Globe = dynamic(() => import("react-globe.gl"), { ssr: false }) as ForwardRefExoticComponent<
-  RefAttributes<GlobeInstance> & Record<string, unknown>
+// Cast through unknown to satisfy the ref typing from react-globe.gl.
+const Globe = dynamic(() => import("react-globe.gl"), { ssr: false }) as unknown as ComponentType<
+  {
+    ref?: MutableRefObject<GlobeInstance | null>;
+    onGlobeClick?: (coords: [number, number] | GlobePoint, event: unknown, point: GlobePoint) => void;
+    globeImageUrl?: string;
+    bumpImageUrl?: string;
+    backgroundColor?: string;
+    showGraticules?: boolean;
+    width?: number;
+    height?: number;
+    animateIn?: boolean;
+    rendererConfig?: Record<string, unknown>;
+  } & Record<string, unknown>
 >;
 
 type GlobeProps = {
