@@ -47,7 +47,14 @@ const normalizeIngredients = (value: unknown): string[] => {
     .map((entry) => {
       if (typeof entry === "string") return entry;
       if (typeof entry === "object" && entry) {
-        const obj = entry as IngredientObject;
+        const obj = entry as {
+          ingredient?: string;
+          name?: string;
+          item?: string;
+          amount?: string;
+          quantity?: string;
+          unit?: string;
+        };
         const ing = obj.ingredient || obj.name || obj.item;
         const qty = obj.amount || obj.quantity;
         const unit = obj.unit;
