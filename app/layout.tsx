@@ -4,7 +4,10 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "NomadDish",
-  description: "Explore regional recipes by spinning and clicking around the globe."
+  description: "Explore regional recipes by spinning and clicking around the globe.",
+  icons: {
+    icon: "/icon.svg"
+  }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
