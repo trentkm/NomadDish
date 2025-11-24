@@ -40,9 +40,9 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="container flex flex-col gap-8 py-10">
-      <section className="grid items-start gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="space-y-6">
+    <main className="container w-full max-w-screen-xl flex flex-col gap-8 py-10 overflow-x-hidden">
+      <section className="grid items-start gap-8 lg:grid-cols-[1.1fr_0.9fr] min-w-0">
+        <div className="space-y-6 min-w-0">
           <div className="glass-panel p-6 lg:p-8">
             <p className="text-xs uppercase tracking-[0.3em] text-primary">NomadDish</p>
             <h1 className="mt-3 text-4xl font-semibold leading-tight sm:text-5xl text-amber-900">
@@ -67,7 +67,7 @@ export default function Home() {
           <GlobeCanvas onSelect={fetchRecipe} />
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-4 min-w-0">
           <div className="glass-panel p-5">
             <div className="flex items-center justify-between">
               <div>

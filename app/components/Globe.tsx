@@ -47,12 +47,12 @@ export function GlobeCanvas({ onSelect }: GlobeProps) {
   }, []);
 
   return (
-    <div className="relative w-full glass-panel overflow-hidden border border-border/60">
+    <div className="relative w-full max-w-full glass-panel overflow-hidden border border-border/60">
       <div className="absolute inset-0 bg-gradient-to-b from-white/70 via-transparent to-white/70 pointer-events-none z-10" />
       <div className="absolute top-4 left-4 z-20 rounded-full bg-white/85 px-3 py-1 text-xs uppercase tracking-[0.2em] text-amber-900 border border-amber-100 shadow">
         Tap the map to pick a spot
       </div>
-      <div className="h-[420px] sm:h-[520px]">
+      <div className="h-[420px] sm:h-[520px] min-w-0">
         <Globe
           ref={globeRef as unknown as MutableRefObject<GlobeInstance>}
           onGlobeClick={(point: GlobePoint) => {
@@ -75,9 +75,9 @@ export function GlobeCanvas({ onSelect }: GlobeProps) {
         />
       </div>
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(251,191,36,0.16),transparent_35%),radial-gradient(circle_at_70%_60%,rgba(52,211,153,0.14),transparent_30%)]" />
-      <div className="absolute bottom-4 left-4 right-4 z-20 flex items-center justify-between text-xs text-stone-600">
-        <span>Auto-rotating globe, ready for curious cooks.</span>
-        <span className="hidden sm:inline-flex items-center gap-2 text-primary">
+      <div className="absolute bottom-4 left-4 right-4 z-20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs text-stone-600 pr-6">
+        <span className="leading-tight">Auto-rotating globe, ready for curious cooks.</span>
+        <span className="inline-flex items-center gap-2 text-primary">
           <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
           Live coordinate picker
         </span>
