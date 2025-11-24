@@ -12,7 +12,7 @@ type GlobeInstance = {
 const Globe = dynamic(() => import("react-globe.gl"), { ssr: false }) as unknown as ComponentType<
   {
     ref?: MutableRefObject<GlobeInstance | null>;
-    onGlobeClick?: (coords: [number, number] | GlobePoint, event: unknown, point: GlobePoint) => void;
+    onGlobeClick?: (point: GlobePoint, event: unknown) => void;
     globeImageUrl?: string;
     bumpImageUrl?: string;
     backgroundColor?: string;
@@ -55,12 +55,10 @@ export function GlobeCanvas({ onSelect }: GlobeProps) {
       <div className="h-[420px] sm:h-[520px]">
         <Globe
           ref={globeRef as unknown as MutableRefObject<GlobeInstance>}
-          onGlobeClick={(coords: [number, number] | GlobePoint, _event: unknown, point: GlobePoint) => {
-            const lat = point?.lat ?? (Array.isArray(coords) ? coords[0] : (coords as GlobePoint)?.lat);
-            const lng = point?.lng ?? (Array.isArray(coords) ? coords[1] : (coords as GlobePoint)?.lng);
-            if (typeof lat === "number" && typeof lng === "number") {
-              onSelect?.(lat, lng);
-            }
+          onGlobeClick={(point: GlobePoint) => {
+            const lat = point?.lat;
+            const lng = point?.lng;
+            if (typeof lat === "number" && typeof lng === "number") onSelect?.(lat, lng);
           }}
           globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
           bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
