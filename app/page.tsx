@@ -45,21 +45,21 @@ export default function Home() {
         <div className="space-y-6">
           <div className="glass-panel p-6 lg:p-8">
             <p className="text-xs uppercase tracking-[0.3em] text-primary">NomadDish</p>
-            <h1 className="mt-3 text-4xl font-semibold leading-tight sm:text-5xl">
-              Spin the planet and uncover dishes beloved in every corner.
+            <h1 className="mt-3 text-4xl font-semibold leading-tight sm:text-5xl text-amber-900">
+              Spin the globe and find a comforting recipe from anywhere.
             </h1>
             <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
-              Tap a location to reverse-geocode it with OpenCage, then we&apos;ll ask OpenAI for a
-              classic regional recipe. You get ingredients, steps, and cultural context instantly.
+              Tap a spot to reverse-geocode with OpenCage, then we&apos;ll ask OpenAI for a cozy, regional dish
+              with ingredients, steps, and a pinch of cultural story.
             </p>
             <div className="mt-5 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-              <span className="flex items-center gap-2 rounded-full bg-muted/40 px-3 py-1">
+              <span className="flex items-center gap-2 rounded-full bg-muted/60 px-3 py-1">
                 <span className="h-2 w-2 rounded-full bg-secondary animate-pulse" />
-                Live geocoding
+                Friendly geocoding
               </span>
-              <span className="flex items-center gap-2 rounded-full bg-muted/40 px-3 py-1">
+              <span className="flex items-center gap-2 rounded-full bg-muted/60 px-3 py-1">
                 <span className="h-2 w-2 rounded-full bg-primary/80" />
-                OpenAI-crafted recipes
+                Recipe stories by AI
               </span>
             </div>
           </div>

@@ -4,25 +4,25 @@
 
 @layer base {
   :root {
-    --background: 220 35% 7%;
-    --foreground: 210 40% 96%;
-    --muted: 217 17% 19%;
-    --muted-foreground: 215 20% 80%;
-    --card: 220 32% 10%;
-    --card-foreground: 210 40% 96%;
-    --popover: 220 32% 10%;
-    --popover-foreground: 210 40% 96%;
-    --border: 218 22% 20%;
-    --input: 218 22% 20%;
-    --primary: 188 79% 60%;
-    --primary-foreground: 210 40% 96%;
-    --secondary: 262 73% 68%;
-    --secondary-foreground: 214 32% 16%;
-    --accent: 43 99% 64%;
-    --accent-foreground: 214 32% 16%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-    --ring: 188 79% 60%;
+    --background: 35 60% 97%;
+    --foreground: 24 32% 16%;
+    --muted: 30 34% 92%;
+    --muted-foreground: 24 16% 38%;
+    --card: 34 55% 98%;
+    --card-foreground: 24 32% 18%;
+    --popover: 34 55% 98%;
+    --popover-foreground: 24 32% 16%;
+    --border: 30 22% 86%;
+    --input: 30 22% 86%;
+    --primary: 24 90% 55%;
+    --primary-foreground: 36 100% 98%;
+    --secondary: 110 32% 62%;
+    --secondary-foreground: 24 32% 16%;
+    --accent: 44 94% 60%;
+    --accent-foreground: 24 32% 16%;
+    --destructive: 2 70% 55%;
+    --destructive-foreground: 36 100% 98%;
+    --ring: 24 90% 55%;
     --radius: 14px;
   }
 
@@ -32,16 +32,17 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    background-image: radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.12), transparent 25%),
-      radial-gradient(circle at 80% 10%, rgba(16, 185, 129, 0.12), transparent 25%),
-      linear-gradient(120deg, rgba(56, 189, 248, 0.15), rgba(168, 85, 247, 0.08), rgba(251, 191, 36, 0.08));
+    background-image:
+      radial-gradient(circle at 20% 18%, rgba(254, 240, 199, 0.85), transparent 28%),
+      radial-gradient(circle at 82% 12%, rgba(210, 244, 222, 0.8), transparent 22%),
+      linear-gradient(120deg, rgba(255, 249, 238, 0.95), rgba(252, 243, 228, 0.9), rgba(242, 252, 243, 0.95));
     background-size: 120% 120%;
-    animation: gradient-shift 18s ease infinite;
+    animation: gradient-shift 28s ease infinite;
   }
 }
 
 @layer components {
   .glass-panel {
-    @apply bg-card/70 backdrop-blur-xl border rounded-2xl shadow-2xl shadow-black/30;
+    @apply bg-card/80 backdrop-blur-xl border rounded-2xl shadow-2xl shadow-black/10;
   }
 }
