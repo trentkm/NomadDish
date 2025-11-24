@@ -22,3 +22,4 @@ Interactive Next.js app that lets you spin a 3D globe, pick any point, reverse-g
 
 - Tailwind and shadcn are configured in `tailwind.config.js` and `components.json`.
 - Adjust the OpenAI model by setting `OPENAI_MODEL` if you prefer a different one.
+- Deploying to Vercel: add `OPENAI_API_KEY` and `OPENCAGE_API_KEY` in the Vercel project environment (Production and Preview). Without them the build will fail when bundling the API route.

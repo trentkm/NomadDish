@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { reverseGeocode } from "@/lib/geocode";
-import { client } from "@/lib/openai";
+import { getOpenAIClient } from "@/lib/openai";
 
 export const dynamic = "force-dynamic";
 
@@ -33,13 +33,11 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "lat and lng query parameters are required." }, { status: 400 });
   }
 
-  if (!process.env.OPENAI_API_KEY) {
-    return NextResponse.json({ error: "Missing OPENAI_API_KEY" }, { status: 500 });
-  }
-
   try {
     const geo = await reverseGeocode(lat, lng);
     const locationLabel = [geo.city, geo.region, geo.country].filter(Boolean).join(", ") || geo.formatted;
+
+    const client = getOpenAIClient();
 
     const prompt = [
       `Give me a traditional popular recipe from ${locationLabel}.`,

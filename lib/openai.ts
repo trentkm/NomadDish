@@ -1,9 +1,13 @@
 import OpenAI from "openai";
 
-if (!process.env.OPENAI_API_KEY) {
-  console.warn("OPENAI_API_KEY is not set. API routes depending on OpenAI will fail.");
-}
+let cachedClient: OpenAI | null = null;
 
-export const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+export function getOpenAIClient() {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error("Missing OPENAI_API_KEY");
+  }
+  if (cachedClient) return cachedClient;
+  cachedClient = new OpenAI({ apiKey });
+  return cachedClient;
+}
