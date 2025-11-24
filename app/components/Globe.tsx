@@ -44,6 +44,18 @@ export function GlobeCanvas({ onSelect }: GlobeProps) {
     }
     globe.pointOfView({ lat: 15, lng: 30, altitude: 2 }, 1000);
     setReady(true);
+
+    // Keep controls in sync if they reset
+    const interval = setInterval(() => {
+      const g = globeRef.current;
+      const c = g?.controls?.();
+      if (c && !c.autoRotate) {
+        c.autoRotate = true;
+        c.autoRotateSpeed = 0.45;
+      }
+    }, 1500);
+
+    return () => clearInterval(interval);
   }, []);
 
   return (
