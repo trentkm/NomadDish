@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { getOpenAIClient } from "@/lib/openai";
+import { normalizeIngredientKey } from "../utils";
 
 export const dynamic = "force-dynamic";
 
@@ -12,6 +13,7 @@ type RecipePayload = {
   culturalBackground: string;
   imagePrompt?: string;
   location?: string;
+  substitutions?: Record<string, string[]>;
 };
 
 type IngredientObject = {
@@ -91,7 +93,15 @@ export async function POST(request: NextRequest) {
       steps: Array.isArray(parsed.steps) ? parsed.steps.map((step: unknown) => String(step)).filter(Boolean) : recipe.steps,
       culturalBackground: parsed.culturalBackground || recipe.culturalBackground || `Adapted from ${locationLabel}`,
       imagePrompt: parsed.imagePrompt || recipe.imagePrompt,
-      location: parsed.location || locationLabel
+      location: parsed.location || locationLabel,
+      substitutions: parsed.substitutions
+        ? Object.fromEntries(
+            Object.entries(parsed.substitutions as Record<string, unknown>).map(([k, v]) => [
+              normalizeIngredientKey(k),
+              Array.isArray(v) ? v.map((x) => String(x)).filter(Boolean) : []
+            ])
+          )
+        : recipe.substitutions
     };
 
     return NextResponse.json(adapted);

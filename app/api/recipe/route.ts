@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { reverseGeocode } from "@/lib/geocode";
 import { getOpenAIClient } from "@/lib/openai";
+import { normalizeIngredientKey } from "./utils";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +14,7 @@ type RecipePayload = {
   culturalBackground: string;
   imagePrompt?: string;
   location?: string;
+  substitutions?: Record<string, string[]>;
 };
 
 const model = process.env.OPENAI_MODEL ?? "gpt-4o-mini";
@@ -24,13 +26,19 @@ const toStringArray = (value: unknown): string[] => {
   return [];
 };
 
-type IngredientObject = {
-  name?: string;
-  item?: string;
-  ingredient?: string;
-  amount?: string;
-  quantity?: string;
-  unit?: string;
+const normalizeSubstitutions = (value: unknown): Record<string, string[]> => {
+  if (!value || typeof value !== "object") return {};
+  const entries = Object.entries(value as Record<string, unknown>);
+  const normalized: Record<string, string[]> = {};
+  for (const [key, val] of entries) {
+    const keyNormalized = normalizeIngredientKey(key);
+    if (!keyNormalized) continue;
+    const list = toStringArray(val);
+    if (list.length) {
+      normalized[keyNormalized] = list;
+    }
+  }
+  return normalized;
 };
 
 const normalizeIngredients = (value: unknown): string[] => {
@@ -39,9 +47,10 @@ const normalizeIngredients = (value: unknown): string[] => {
     .map((entry) => {
       if (typeof entry === "string") return entry;
       if (typeof entry === "object" && entry) {
-        const ing = (entry as IngredientObject).ingredient || (entry as IngredientObject).name || (entry as IngredientObject).item;
-        const qty = (entry as IngredientObject).amount || (entry as IngredientObject).quantity;
-        const unit = (entry as IngredientObject).unit;
+        const obj = entry as IngredientObject;
+        const ing = obj.ingredient || obj.name || obj.item;
+        const qty = obj.amount || obj.quantity;
+        const unit = obj.unit;
         const parts = [qty, unit, ing].filter(Boolean);
         if (parts.length) return parts.join(" ");
       }
@@ -67,8 +76,9 @@ export async function GET(request: NextRequest) {
 
     const prompt = [
       `Give me a traditional popular recipe from ${locationLabel}.`,
-      "Return JSON with recipeName, description, ingredients, steps, culturalBackground, imagePrompt.",
+      "Return JSON with recipeName, description, ingredients, steps, culturalBackground, imagePrompt, substitutions.",
       "Ingredients should include quantities and units in each entry (e.g., \"2 cups jasmine rice\").",
+      "substitutions should be an object where keys are ingredient names and values are arrays of 2-3 practical swaps available in common pantries.",
       "Steps should be concise, ordered actions.",
       "Avoid alcohol unless it is central to the dish."
     ].join(" ");
@@ -100,7 +110,8 @@ export async function GET(request: NextRequest) {
       steps: toStringArray(parsed.steps),
       culturalBackground: parsed.culturalBackground || `A taste of ${locationLabel}.`,
       imagePrompt: parsed.imagePrompt,
-      location: locationLabel
+      location: locationLabel,
+      substitutions: normalizeSubstitutions(parsed.substitutions)
     };
 
     return NextResponse.json(recipe);
