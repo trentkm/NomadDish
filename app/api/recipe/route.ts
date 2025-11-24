@@ -24,6 +24,32 @@ const toStringArray = (value: unknown): string[] => {
   return [];
 };
 
+type IngredientObject = {
+  name?: string;
+  item?: string;
+  ingredient?: string;
+  amount?: string;
+  quantity?: string;
+  unit?: string;
+};
+
+const normalizeIngredients = (value: unknown): string[] => {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((entry) => {
+      if (typeof entry === "string") return entry;
+      if (typeof entry === "object" && entry) {
+        const ing = (entry as IngredientObject).ingredient || (entry as IngredientObject).name || (entry as IngredientObject).item;
+        const qty = (entry as IngredientObject).amount || (entry as IngredientObject).quantity;
+        const unit = (entry as IngredientObject).unit;
+        const parts = [qty, unit, ing].filter(Boolean);
+        if (parts.length) return parts.join(" ");
+      }
+      return null;
+    })
+    .filter((s): s is string => Boolean(s));
+};
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const lat = parseFloat(searchParams.get("lat") || "");
@@ -42,7 +68,8 @@ export async function GET(request: NextRequest) {
     const prompt = [
       `Give me a traditional popular recipe from ${locationLabel}.`,
       "Return JSON with recipeName, description, ingredients, steps, culturalBackground, imagePrompt.",
-      "Ingredients should be short bullet-ready strings. Steps should be concise, ordered actions.",
+      "Ingredients should include quantities and units in each entry (e.g., \"2 cups jasmine rice\").",
+      "Steps should be concise, ordered actions.",
       "Avoid alcohol unless it is central to the dish."
     ].join(" ");
 
@@ -69,7 +96,7 @@ export async function GET(request: NextRequest) {
     const recipe: RecipePayload = {
       recipeName: parsed.recipeName || "Regional Dish",
       description: parsed.description || `A staple dish from ${locationLabel}.`,
-      ingredients: toStringArray(parsed.ingredients),
+      ingredients: normalizeIngredients(parsed.ingredients),
       steps: toStringArray(parsed.steps),
       culturalBackground: parsed.culturalBackground || `A taste of ${locationLabel}.`,
       imagePrompt: parsed.imagePrompt,
