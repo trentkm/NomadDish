@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { GlobeCanvas } from "./components/Globe";
@@ -12,12 +12,28 @@ type RecipeResponse = Recipe & { imagePrompt?: string };
 export default function Home() {
   const [recipe, setRecipe] = useState<RecipeResponse | null>(null);
   const [loading, setLoading] = useState(false);
+  const [adaptLoading, setAdaptLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [adaptError, setAdaptError] = useState<string | null>(null);
   const [lastQuery, setLastQuery] = useState<string | null>(null);
+  const [selectedIngredient, setSelectedIngredient] = useState<string>("");
+  const [newIngredient, setNewIngredient] = useState<string>("");
+  const ingredientOptions = useMemo(() => recipe?.ingredients ?? [], [recipe]);
+
+  useEffect(() => {
+    if (recipe?.ingredients?.length) {
+      setSelectedIngredient(recipe.ingredients[0]);
+    } else {
+      setSelectedIngredient("");
+    }
+    setAdaptError(null);
+    setNewIngredient("");
+  }, [recipe]);
 
   const fetchRecipe = useCallback(async (lat: number, lng: number) => {
     setLoading(true);
     setError(null);
+    setAdaptError(null);
     setLastQuery(`Lat ${lat.toFixed(2)}, Lng ${lng.toFixed(2)}`);
     try {
       const response = await fetch(`/api/recipe?lat=${lat}&lng=${lng}`);
@@ -39,9 +55,42 @@ export default function Home() {
     }
   }, []);
 
+  const handleAdapt = useCallback(async () => {
+    if (!recipe) return;
+    if (!selectedIngredient || !newIngredient.trim()) {
+      setAdaptError("Please pick an ingredient to swap and enter a replacement.");
+      return;
+    }
+    setAdaptLoading(true);
+    setAdaptError(null);
+    try {
+      const response = await fetch("/api/recipe/substitute", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          recipe,
+          replaceIngredient: selectedIngredient,
+          newIngredient: newIngredient.trim()
+        })
+      });
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || "Unable to adapt recipe");
+      }
+      const updated: RecipeResponse = await response.json();
+      setRecipe(updated);
+      setLastQuery((prev) => (prev ? `${prev} · adapted` : "Adapted recipe"));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Unexpected error while adapting recipe";
+      setAdaptError(message);
+    } finally {
+      setAdaptLoading(false);
+    }
+  }, [recipe, selectedIngredient, newIngredient]);
+
   return (
     <main className="container w-full max-w-screen-xl flex flex-col gap-8 py-10 overflow-x-hidden">
-      <section className="grid items-start gap-8 lg:grid-cols-[1.1fr_0.9fr] min-w-0">
+      <section className="grid items-start justify-items-stretch gap-8 lg:grid-cols-2 min-w-0">
         <div className="space-y-6 min-w-0">
           <div className="glass-panel p-6 lg:p-8">
             <p className="text-xs uppercase tracking-[0.3em] text-primary">NomadDish</p>
@@ -104,7 +153,45 @@ export default function Home() {
           {loading ? (
             <Loader />
           ) : recipe ? (
-            <RecipeCard recipe={recipe} />
+            <>
+              <RecipeCard recipe={recipe} />
+              <div className="glass-panel p-5 space-y-4">
+                <div className="flex items-center justify-between gap-3 flex-wrap">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.2em] text-primary">Ingredient swap</p>
+                    <p className="text-sm text-muted-foreground">Replace a key ingredient with something you have on hand.</p>
+                  </div>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto] items-center">
+                  <select
+                    className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
+                    value={selectedIngredient}
+                    onChange={(e) => setSelectedIngredient(e.target.value)}
+                    disabled={!ingredientOptions.length}
+                  >
+                    {ingredientOptions.length === 0 ? (
+                      <option value="">No ingredients available</option>
+                    ) : (
+                      ingredientOptions.map((item) => (
+                        <option key={item} value={item}>
+                          {item}
+                        </option>
+                      ))
+                    )}
+                  </select>
+                  <input
+                    className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    placeholder="Swap with..."
+                    value={newIngredient}
+                    onChange={(e) => setNewIngredient(e.target.value)}
+                  />
+                  <Button onClick={handleAdapt} disabled={adaptLoading || !ingredientOptions.length} size="lg">
+                    {adaptLoading ? "Adapting..." : "Swap ingredient"}
+                  </Button>
+                </div>
+                {adaptError && <p className="text-sm text-destructive">{adaptError}</p>}
+              </div>
+            </>
           ) : (
             <div className="glass-panel p-6 text-sm text-muted-foreground leading-relaxed">
               Choose a spot on the globe to fetch a recipe rooted in that place. Try coastal regions,

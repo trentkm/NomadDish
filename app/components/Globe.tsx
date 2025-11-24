@@ -47,7 +47,7 @@ export function GlobeCanvas({ onSelect }: GlobeProps) {
   }, []);
 
   return (
-    <div className="relative w-full max-w-full glass-panel overflow-hidden border border-border/60">
+    <div className="relative w-full max-w-full glass-panel overflow-hidden border border-border/60 mx-auto">
       <div className="absolute inset-0 bg-gradient-to-b from-white/70 via-transparent to-white/70 pointer-events-none z-10" />
       <div className="absolute top-4 left-4 z-20 rounded-full bg-white/85 px-3 py-1 text-xs uppercase tracking-[0.2em] text-amber-900 border border-amber-100 shadow">
         Tap the map to pick a spot
