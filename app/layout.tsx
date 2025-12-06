@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { cn } from "@/lib/utils";
 import "./globals.css";
-import Snowfall from "./components/Snowfall";
+import SnowfallToggle from "./components/SnowfallToggle";
 
 export const metadata: Metadata = {
   title: "NomadDish",
@@ -15,7 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn("min-h-screen bg-background text-foreground font-sans overflow-x-hidden")}>
-        <Snowfall />
+        <SnowfallToggle />
         <div className="min-h-screen flex flex-col overflow-x-hidden">{children}</div>
       </body>
     </html>
