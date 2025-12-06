@@ -4,26 +4,26 @@
 
 @layer base {
   :root {
-    --background: 35 60% 97%;
-    --foreground: 24 32% 16%;
-    --muted: 30 34% 92%;
-    --muted-foreground: 24 16% 38%;
-    --card: 34 55% 98%;
-    --card-foreground: 24 32% 18%;
-    --popover: 34 55% 98%;
-    --popover-foreground: 24 32% 16%;
-    --border: 30 22% 86%;
-    --input: 30 22% 86%;
-    --primary: 24 90% 55%;
+    --background: 40 39.13% 95.49%;
+    --foreground: 33.91 36.51% 12.35%;
+    --muted: 38.18 42.31% 89.8%;
+    --muted-foreground: 37.5 9.45% 50.2%;
+    --card: 42.86 100% 98.63%;
+    --card-foreground: 36 15.92% 30.78%;
+    --popover: 42.86 100% 98.63%;
+    --popover-foreground: 33.91 36.51% 12.35%;
+    --border: 41.25 22.86% 86.27%;
+    --input: 41.25 22.86% 86.27%;
+    --primary: 115.29 30.54% 32.75%;
     --primary-foreground: 36 100% 98%;
-    --secondary: 110 32% 62%;
-    --secondary-foreground: 24 32% 16%;
-    --accent: 44 94% 60%;
-    --accent-foreground: 24 32% 16%;
+    --secondary: 22.76 79.09% 56.86%;
+    --secondary-foreground: 36 100% 98%;
+    --accent: 22.76 79.09% 56.86%;
+    --accent-foreground: 33.91 36.51% 12.35%;
     --destructive: 2 70% 55%;
     --destructive-foreground: 36 100% 98%;
-    --ring: 24 90% 55%;
-    --radius: 14px;
+    --ring: 115.29 30.54% 32.75%;
+    --radius: 10px;
   }
 
   * {
@@ -43,7 +43,7 @@
 
 @layer components {
   .glass-panel {
-    @apply bg-card/80 backdrop-blur-xl border rounded-2xl shadow-2xl shadow-black/10;
+    @apply bg-card border rounded-[10px] shadow-[0_8px_20px_rgba(0,0,0,0.04)];
   }
 
   .card-stage {

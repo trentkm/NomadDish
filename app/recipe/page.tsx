@@ -1,72 +1,62 @@
 "use client";
 
 import Image from "next/image";
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Loader } from "../components/Loader";
 import { RecipeCard, type Recipe } from "../components/RecipeCard";
+import { DishImage } from "../components/DishImage";
+import { IngredientItem } from "../components/IngredientItem";
+import { LocationChip } from "../components/LocationChip";
+import { BackButton } from "../components/BackButton";
 
-type RecipeResponse = Recipe & { imagePrompt?: string };
+type IngredientEntry = { name: string; swaps?: string[] };
+
+type RecipeResponse = {
+  recipeName: string;
+  description: string;
+  ingredients: (string | IngredientEntry)[];
+  steps: string[];
+  culturalBackground?: string;
+  imagePrompt?: string;
+  location?: string;
+  substitutions?: Record<string, string[]>;
+  city?: string;
+  region?: string;
+  country?: string;
+  imageUrl?: string;
+};
 
 export default function RecipePage() {
-  return (
-    <Suspense
-      fallback={
-        <main className="card-stage px-4 py-12">
-          <Loader />
-        </main>
-      }
-    >
-      <RecipePageContent />
-    </Suspense>
-  );
-}
-
-function RecipePageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
   const lat = useMemo(() => parseFloat(searchParams.get("lat") || ""), [searchParams]);
   const lng = useMemo(() => parseFloat(searchParams.get("lng") || ""), [searchParams]);
-
   const hasCoords = !Number.isNaN(lat) && !Number.isNaN(lng);
 
   const [recipe, setRecipe] = useState<RecipeResponse | null>(null);
   const [loading, setLoading] = useState(false);
-  const [adaptLoading, setAdaptLoading] = useState(false);
-  const [imageLoading, setImageLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [adaptError, setAdaptError] = useState<string | null>(null);
-  const [imageError, setImageError] = useState<string | null>(null);
-  const [lastQuery, setLastQuery] = useState<string | null>(null);
   const [imageData, setImageData] = useState<string | null>(null);
-
-  useEffect(() => {
-    setAdaptError(null);
-    setImageError(null);
-    setImageData(null);
-  }, [recipe]);
+  const [imageLoading, setImageLoading] = useState(false);
+  const [imageError, setImageError] = useState<string | null>(null);
 
   const fetchRecipe = useCallback(
     async (latVal: number, lngVal: number) => {
       setLoading(true);
       setError(null);
-      setAdaptError(null);
-      setImageError(null);
       setImageData(null);
-      setLastQuery(`Lat ${latVal.toFixed(2)}, Lng ${lngVal.toFixed(2)}`);
+      setImageError(null);
       try {
-        const response = await fetch(`/api/recipe?lat=${latVal}&lng=${lngVal}`);
-        if (!response.ok) {
-          const text = await response.text();
+        const res = await fetch(`/api/recipe?lat=${latVal}&lng=${lngVal}`);
+        if (!res.ok) {
+          const text = await res.text();
           throw new Error(text || "Unable to fetch recipe");
         }
-        const data: RecipeResponse = await response.json();
+        const data = (await res.json()) as RecipeResponse;
         setRecipe(data);
-        if (data.location) {
-          setLastQuery(`${data.location} (${latVal.toFixed(2)}, ${lngVal.toFixed(2)})`);
-        }
       } catch (err) {
         const message = err instanceof Error ? err.message : "Unexpected error";
         setError(message);
@@ -83,47 +73,14 @@ function RecipePageContent() {
       fetchRecipe(lat, lng);
     } else {
       setRecipe(null);
-      setLastQuery(null);
     }
   }, [fetchRecipe, hasCoords, lat, lng]);
 
-  const handleAdapt = useCallback(
-    async (ingredient: string, replacement: string) => {
-      if (!recipe) return;
-      if (!ingredient || !replacement.trim()) {
-        setAdaptError("Please pick a swap option.");
-        return;
-      }
-      setAdaptLoading(true);
-      setAdaptError(null);
-      try {
-        const response = await fetch("/api/recipe/substitute", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            recipe,
-            replaceIngredient: ingredient,
-            newIngredient: replacement.trim()
-          })
-        });
-        if (!response.ok) {
-          const text = await response.text();
-          throw new Error(text || "Unable to adapt recipe");
-        }
-        const updated: RecipeResponse = await response.json();
-        setRecipe(updated);
-        setLastQuery((prev) => (prev ? `${prev} · adapted` : "Adapted recipe"));
-        setImageData(null);
-        setImageError(null);
-      } catch (err) {
-        const message = err instanceof Error ? err.message : "Unexpected error while adapting recipe";
-        setAdaptError(message);
-      } finally {
-        setAdaptLoading(false);
-      }
-    },
-    [recipe]
-  );
+  const handleRandomSpot = useCallback(() => {
+    const nextLat = parseFloat((Math.random() * 180 - 90).toFixed(4));
+    const nextLng = parseFloat((Math.random() * 360 - 180).toFixed(4));
+    router.push(`/recipe?lat=${nextLat}&lng=${nextLng}`);
+  }, [router]);
 
   const handleGenerateImage = useCallback(async () => {
     if (!recipe) return;
@@ -137,7 +94,7 @@ function RecipePageContent() {
         body: JSON.stringify({
           prompt:
             recipe.imagePrompt ||
-            `A warmly lit appetizing photo of ${recipe.recipeName}, styled for a cozy cookbook, centered dish, shallow depth of field.`
+            `A warmly lit appetizing photo of ${recipe.recipeName}, styled for a cozy cookbook, centered dish.`
         })
       });
       if (!response.ok) {
@@ -155,123 +112,68 @@ function RecipePageContent() {
     }
   }, [recipe]);
 
+  const parsedIngredients: { name: string; swaps?: string[] }[] = (recipe?.ingredients || []).map((item) => {
+    if (typeof item === "string") return { name: item };
+    return { name: item.name, swaps: item.swaps };
+  });
+
+  const locParts = recipe?.location?.split(",") ?? [];
+  const locationCity = recipe?.city || locParts[0]?.trim();
+  const locationRegion = recipe?.region || locParts[1]?.trim();
+  const locationCountry = recipe?.country || locParts[2]?.trim();
+
   return (
-    <main className="card-stage px-4 py-12">
-      <div className="stage-card swipe-in-left">
-        <div className="relative z-10 space-y-4">
-          <div className="flex items-center justify-between flex-wrap gap-3">
-            <p className="text-xs uppercase tracking-[0.3em] text-primary">NomadDish</p>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span className="flex h-8 items-center gap-2 rounded-full bg-muted/70 px-3 py-1">
-                <span className="h-2 w-2 rounded-full bg-primary/80" />
-                Recipe stage
-              </span>
-              <span className="flex h-8 items-center gap-2 rounded-full bg-muted/70 px-3 py-1">
-                <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                Swipe-in card
-              </span>
+    <main className="min-h-screen flex flex-col items-center px-6 py-12 bg-[var(--background)]">
+      <div className="w-full max-w-4xl space-y-6">
+        <div className="flex items-center gap-2">
+          <BackButton />
+          <LocationChip city={locationCity} region={locationRegion} country={locationCountry} />
+        </div>
+
+        {error && <div className="glass-panel p-4 text-sm text-destructive">{error}</div>}
+
+        {loading ? (
+          <Loader />
+        ) : recipe ? (
+          <div className="space-y-6">
+            <div className="space-y-1">
+              <h1 className="text-3xl sm:text-4xl font-semibold text-foreground">{recipe.recipeName}</h1>
+              <p className="text-sm text-muted-foreground">Traditional dish from {locationRegion || locationCountry || "this region"}</p>
             </div>
-          </div>
-          <h1 className="text-4xl font-semibold leading-tight sm:text-5xl text-amber-900">
-            Ingredients and recipe details
-          </h1>
-          <p className="text-lg leading-relaxed text-muted-foreground max-w-3xl">
-            We take your coordinates, reverse-geocode the region, and craft a structured recipe with ingredients, steps,
-            substitutions, and a cozy image preview.
-          </p>
-          <div className="flex items-center gap-3 pt-2">
-            <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold uppercase text-xs tracking-[0.2em]">
-              Dish
-            </div>
-            <div className="text-sm text-muted-foreground">
-              {hasCoords ? "Loaded from your globe selection." : "Pick a spot on the map first."}
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Button variant="outline" size="sm" onClick={() => router.push("/")}>
-              Back to map
-            </Button>
-            {hasCoords && (
-              <Button variant="secondary" size="sm" onClick={() => fetchRecipe(lat, lng)} disabled={loading}>
-                {loading ? "Refreshing..." : "Refetch recipe"}
+
+            <DishImage src={imageData || recipe.imageUrl || undefined} alt={recipe.recipeName} />
+            {imageError && <p className="text-sm text-destructive">{imageError}</p>}
+            <div className="flex gap-2 flex-wrap">
+              <Button variant="secondary" onClick={() => router.push("/")}>Pick another spot</Button>
+              <Button variant="ghost" onClick={handleRandomSpot}>Random spot</Button>
+              <Button variant="outline" onClick={handleGenerateImage} disabled={imageLoading}>
+                {imageLoading ? "Rendering..." : "Render image"}
               </Button>
-            )}
+            </div>
+
+            <section className="space-y-3">
+              <h2 className="text-xl font-semibold text-foreground">Ingredients</h2>
+              <div className="space-y-2">
+                {parsedIngredients.map((ing, idx) => (
+                  <IngredientItem key={`${ing.name}-${idx}`} name={ing.name} swaps={ing.swaps} />
+                ))}
+              </div>
+            </section>
+
+            <section className="space-y-3">
+              <h2 className="text-xl font-semibold text-foreground">Steps</h2>
+              <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
+                {recipe.steps.map((step, idx) => (
+                  <li key={`${idx}-${step.slice(0, 6)}`}>{step}</li>
+                ))}
+              </ol>
+            </section>
           </div>
-        </div>
-
-        <div className="relative z-10 mt-8 space-y-4">
-          {!hasCoords && (
-            <div className="glass-panel p-6 text-sm text-muted-foreground leading-relaxed border-dashed border-muted/70">
-              Add `lat` and `lng` by tapping the globe on the map page. You&apos;ll be routed here automatically with the
-              coordinates.
-            </div>
-          )}
-
-          {error && (
-            <div className="glass-panel border-destructive/60 p-4 text-sm text-destructive">
-              {error}
-            </div>
-          )}
-
-          {loading ? (
-            <Loader />
-          ) : recipe ? (
-            <>
-              <div className="glass-panel p-5">
-                <div className="flex items-center justify-between gap-3 flex-wrap">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.25em] text-primary">Your pick</p>
-                    <p className="text-lg font-semibold text-foreground">{lastQuery ?? "Unknown location"}</p>
-                    <p className="text-sm text-muted-foreground mt-1">Coordinates sent from the globe.</p>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setRecipe(null);
-                      setLastQuery(null);
-                      setError(null);
-                      setAdaptError(null);
-                      setImageError(null);
-                      setImageData(null);
-                      router.push("/");
-                    }}
-                  >
-                    Pick another spot
-                  </Button>
-                </div>
-              </div>
-
-              <RecipeCard recipe={recipe} onSwap={handleAdapt} isSwapping={adaptLoading} />
-
-              <div className="glass-panel p-5 space-y-3">
-                <div className="flex items-center justify-between gap-3 flex-wrap">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.2em] text-primary">Dish preview</p>
-                    <p className="text-sm text-muted-foreground">Generate a cozy image of this dish.</p>
-                  </div>
-                  <Button onClick={handleGenerateImage} disabled={imageLoading} size="sm" variant="secondary">
-                    {imageLoading ? "Rendering..." : "Render image"}
-                  </Button>
-                </div>
-                {imageError && <p className="text-sm text-destructive">{imageError}</p>}
-                {imageLoading && (
-                  <div className="aspect-square w-full rounded-xl bg-muted/50 animate-pulse border border-border/60" />
-                )}
-                {imageData && (
-                  <div className="relative aspect-square w-full overflow-hidden rounded-xl border border-border/60 bg-muted/30">
-                    <Image src={imageData} alt={`Dish preview for ${recipe.recipeName}`} fill className="object-cover" />
-                  </div>
-                )}
-              </div>
-              {adaptError && <div className="glass-panel border-destructive/60 p-4 text-sm text-destructive">{adaptError}</div>}
-            </>
-          ) : hasCoords && !error ? (
-            <div className="glass-panel p-6 text-sm text-muted-foreground leading-relaxed">
-              Fetching your recipe details... If nothing appears, try refreshing or pick another spot.
-            </div>
-          ) : null}
-        </div>
+        ) : hasCoords ? (
+          <div className="glass-panel p-4 text-sm text-muted-foreground">Fetching your recipe...</div>
+        ) : (
+          <div className="glass-panel p-4 text-sm text-muted-foreground">Pick a spot first.</div>
+        )}
       </div>
     </main>
   );

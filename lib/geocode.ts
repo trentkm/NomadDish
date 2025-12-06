@@ -37,11 +37,7 @@ export async function reverseGeocode(lat: number, lng: number): Promise<GeocodeR
   const city = components?.city || components?.town || components?.village;
   const region = components?.state || components?.county;
   const country = components?.country;
-  const fallback = result?.formatted || [city, region, country].filter(Boolean).join(", ");
-
-  if (!city && !region && !country) {
-    throw new Error("Unable to determine location details from coordinates");
-  }
+  const fallback = result?.formatted || [city, region, country].filter(Boolean).join(", ") || "This spot";
 
   return {
     city,
