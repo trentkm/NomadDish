@@ -45,4 +45,62 @@
   .glass-panel {
     @apply bg-card/80 backdrop-blur-xl border rounded-2xl shadow-2xl shadow-black/10;
   }
+
+  .card-stage {
+    @apply flex min-h-[70vh] items-center justify-center;
+  }
+
+  .stage-card {
+    @apply glass-panel w-full max-w-5xl mx-auto p-6 sm:p-8 lg:p-10 relative overflow-hidden;
+  }
+
+  .stage-card::before {
+    content: "";
+    @apply absolute inset-0 pointer-events-none;
+    background: radial-gradient(circle at 18% 22%, rgba(252, 211, 77, 0.14), transparent 32%),
+      radial-gradient(circle at 78% 18%, rgba(74, 222, 128, 0.14), transparent 30%),
+      radial-gradient(circle at 50% 90%, rgba(252, 211, 77, 0.1), transparent 32%);
+  }
+
+  .swipe-in-right {
+    animation: swipe-in-right 520ms ease forwards;
+  }
+
+  .swipe-in-left {
+    animation: swipe-in-left 520ms ease forwards;
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes swipe-in-right {
+  0% {
+    opacity: 0;
+    transform: translateX(32px) translateY(6px) scale(0.99);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) translateY(0) scale(1);
+  }
+}
+
+@keyframes swipe-in-left {
+  0% {
+    opacity: 0;
+    transform: translateX(-32px) translateY(6px) scale(0.99);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) translateY(0) scale(1);
+  }
 }
