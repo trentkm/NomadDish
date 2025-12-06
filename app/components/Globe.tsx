@@ -22,7 +22,7 @@ export function Globe({ onSelect, className }: GlobeProps) {
 
     if (!style) {
       console.error(
-        "[Globe] No style available. Provide NEXT_PUBLIC_MAP_STYLE_URL or NEXT_PUBLIC_MAPTILER_KEY."
+        "[Globe] No style available. Provide NEXT_PUBLIC_MAP_STYLE_URL."
       );
       return;
     }

@@ -4,25 +4,25 @@
 
 @layer base {
   :root {
-    --background: 40 39.13% 95.49%;
-    --foreground: 33.91 36.51% 12.35%;
-    --muted: 38.18 42.31% 89.8%;
-    --muted-foreground: 37.5 9.45% 50.2%;
-    --card: 42.86 100% 98.63%;
-    --card-foreground: 36 15.92% 30.78%;
-    --popover: 42.86 100% 98.63%;
-    --popover-foreground: 33.91 36.51% 12.35%;
-    --border: 41.25 22.86% 86.27%;
-    --input: 41.25 22.86% 86.27%;
-    --primary: 115.29 30.54% 32.75%;
-    --primary-foreground: 36 100% 98%;
-    --secondary: 22.76 79.09% 56.86%;
-    --secondary-foreground: 36 100% 98%;
-    --accent: 22.76 79.09% 56.86%;
-    --accent-foreground: 33.91 36.51% 12.35%;
+    --background: 28 55% 89%;
+    --foreground: 23 38% 18%;
+    --muted: 26 45% 83%;
+    --muted-foreground: 23 18% 40%;
+    --card: 33 65% 94%;
+    --card-foreground: 23 38% 18%;
+    --popover: 33 65% 94%;
+    --popover-foreground: 23 38% 18%;
+    --border: 25 32% 78%;
+    --input: 25 32% 78%;
+    --primary: 14 82% 55%;
+    --primary-foreground: 22 70% 98%;
+    --secondary: 194 82% 42%;
+    --secondary-foreground: 210 40% 98%;
+    --accent: 287 62% 65%;
+    --accent-foreground: 23 38% 18%;
     --destructive: 2 70% 55%;
-    --destructive-foreground: 36 100% 98%;
-    --ring: 115.29 30.54% 32.75%;
+    --destructive-foreground: 22 70% 98%;
+    --ring: 14 82% 55%;
     --radius: 10px;
   }
 
@@ -33,11 +33,12 @@
   body {
     @apply bg-background text-foreground antialiased;
     background-image:
-      radial-gradient(circle at 20% 18%, rgba(254, 240, 199, 0.85), transparent 28%),
-      radial-gradient(circle at 82% 12%, rgba(210, 244, 222, 0.8), transparent 22%),
-      linear-gradient(120deg, rgba(255, 249, 238, 0.95), rgba(252, 243, 228, 0.9), rgba(242, 252, 243, 0.95));
-    background-size: 120% 120%;
-    animation: gradient-shift 28s ease infinite;
+      radial-gradient(circle at 20% 18%, rgba(255, 213, 157, 0.7), transparent 32%),
+      radial-gradient(circle at 80% 14%, rgba(140, 196, 255, 0.55), transparent 28%),
+      radial-gradient(circle at 50% 88%, rgba(214, 168, 255, 0.45), transparent 34%),
+      linear-gradient(120deg, rgba(255, 245, 233, 0.96), rgba(248, 233, 221, 0.95), rgba(238, 246, 255, 0.92));
+    background-size: 150% 150%;
+    animation: gradient-shift 24s ease infinite;
   }
 }
 

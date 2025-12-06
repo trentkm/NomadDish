@@ -7,6 +7,7 @@ Interactive Next.js app that lets you spin a 3D globe, pick any point, reverse-g
 1. Install dependencies: `npm install`
 2. Create `.env.local` with your keys:
    ```
+   NEXT_PUBLIC_MAP_STYLE_URL=YOUR_MAP_STYLE_JSON_URL # e.g. https://api.maptiler.com/maps/streets-v2/style.json?key=YOUR_KEY
    OPENAI_API_KEY=YOUR_OPENAI_KEY
    OPENCAGE_API_KEY=YOUR_OPENCAGE_KEY
    ```

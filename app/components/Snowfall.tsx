@@ -12,7 +12,7 @@ type Flake = {
 
 export default function Snowfall() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -64,7 +64,7 @@ export default function Snowfall() {
     window.addEventListener("resize", handleResize);
 
     return () => {
-      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+      if (animationRef.current !== null) cancelAnimationFrame(animationRef.current);
       window.removeEventListener("resize", handleResize);
     };
   }, []);
